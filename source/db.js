@@ -35,15 +35,16 @@ const Schools = db.define('schools', {
   },
   name: {
     type: Sequelize.STRING,
-    validate: {
-      allowNull: false
-    }
+    allowNull: false
   },
   image: {
     type: Sequelize.STRING
   }
 })
 
+Schools.hasMany(Students)
+
+//SEED DATA
 syncAndSeed = async() => {
   await db.sync({force:true})
   await studentsSeed.map((student) => {
@@ -61,10 +62,13 @@ const studentsSeed = [
   {firstName: 'Neil-deGrase', lastName: 'tyson', email: 'universe@nowhere.com', GPA: 3.4},
   {firstName: 'Carl', lastName: 'Sagan', email: 'space@nowhere.com', GPA: 3.6}
 ];
+
 const schoolsSeed = [
   {name:'Space Academy', image:'Sf_academy'},
   {name:'Pratt Institure', image:'Pratt_Institute_Seal'},
 ]
+
+//syncAndSeed()
 
 module.exports = {
   models: {
