@@ -64,8 +64,9 @@ const studentsSeed = [
 ];
 
 const schoolsSeed = [
-  {name:'Space Academy', image:'Sf_academy'},
-  {name:'Pratt Institure', image:'Pratt_Institute_Seal'},
+  {name:'Space Academy', image:'https://vignette.wikia.nocookie.net/memoryalpha/images/1/18/Starfleet_Academy_logo_2368.png/revision/latest?cb=20060912110311&path-prefix=en'},
+  {name:'Pratt Institure', image:'https://cdn-payscale.com/content/school_logos/Pratt%20Institute_200px.png'},
+  {name:'Le Cordon Bleu', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_pMw9Sru_aQUy2Rg8tdh_NjSaeW1aBVYxcU0earWX17MPuhNU'}
 ]
 
 //syncAndSeed()
@@ -75,5 +76,7 @@ module.exports = {
     Students,
     Schools
   },
-  syncAndSeed
+  syncAndSeed,
+  studentsSeed,
+  schoolsSeed
 }
