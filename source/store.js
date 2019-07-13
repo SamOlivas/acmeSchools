@@ -2,12 +2,18 @@
 // show the school with the highest GPA
 const { store } = require('redux')
 
-
+const SET_STUDENTS = 'SET_STUDENTS'
 const ADD_STUDENT = 'ADD_STUDENT';
 const DEL_STUDENT = 'DEL_STUDENT';
 const ENROLL_STUDENT = 'ENROLL_STUDENT';
 const WITHDRAW_STUDENT = 'WITHDRAW_STUDENT';
 
+const setStudents = (_students) => (
+  {
+    type: SET_STUDENTS,
+    students: _students
+  }
+)
 const addStudent= (_student) => (
   {
     type: ADD_STUDENT,
@@ -20,7 +26,7 @@ const delStudent = (_student) => (
     id: _student.id
   }
 );
-// v TO WORK ON v
+// v TO WORK ON -NOT SURE WHAT TO RETURNv
 const enrollStudent = (_student, _school) => (
   {
     type: ENROLL_STUDENT,
@@ -37,6 +43,11 @@ const withdrawStudent = (_student) => (
 
 const store = Redux.createStore((state = {schools: [], students: []}, action ) => {
   switch(action.type){
+    case 'SET_STUDENTS':
+      return {
+        ...state,
+        students: action.students
+      }
     case 'ADD_STUDENT':
       return {
         ...state,

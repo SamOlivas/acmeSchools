@@ -45,6 +45,7 @@
     <script type='text/babel'>
       const { HashRouter, NavLink, Route } = ReactRouterDOM;
       const { Provider, connect } = ReactRedux;
+
       //STORE seprated into seperate file, need to import
 
       //SANDBOX BELOW
@@ -122,7 +123,18 @@
             GPA:null,
             schoolId:null
           }
-        }
+        };
+        async componentDidMount(){
+          const reply = await axios.get('/api/students')
+          if (reply.data) {
+            this.props.dispatch(
+              {
+                type:"SET_STUDENTS",
+                payload: reply.data
+              }
+            )
+          }
+        };
         render(){
           return(
             <div className='center'>
@@ -153,7 +165,9 @@
                     <div key={student.id} className='SingleStudent'>
                       <h4>{student.firstName}</h4>
                       <div> GPA: {student.GPA} </div>
-                      <select> {student.schoolId} </select>
+                      <select>
+                        <option>SCHOOL OPTIONS</option>
+                      </select>
                     </div>
                   )
                 })}
