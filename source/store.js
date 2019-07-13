@@ -69,4 +69,3 @@ const store = Redux.createStore((state = {schools: [], students: []}, action ) =
   }
 })
 
-export default {store}

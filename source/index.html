@@ -39,50 +39,152 @@
     <script src='https://cdnjs.cloudflare.com/ajax/libs/react-router-dom/5.0.0/react-router-dom.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.1/redux.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/react-redux/7.1.0/react-redux.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/redux-thunk/2.3.0/redux-thunk.js'></script>
   </head>
   <body id='body'>
     <div id='root'></div>
     <script type='text/babel'>
       const { HashRouter, NavLink, Route } = ReactRouterDOM;
-      const { Provider, connect } = ReactRedux;
-      const { store } = './store'
-      console.log(store.getState())
-      //STORE seprated into seperate file, need to import
+      const { Provider, connect} = ReactRedux;
+      const { applyMiddleware } = Redux;
 
-      //SANDBOX BELOW
-      const studentsSeed = [
-        {firstName: 'Bob', lastName: 'Ross', email: 'chillwithbob@nature.net', GPA: 3.0},
-        {firstName: 'Will', lastName: 'Wheaton', email: 'yellowshirt@enterprise.com', GPA: 3.5},
-        {firstName: 'Anikan', lastName: 'Skywalker', email: 'podfanatic@race.net', GPA: 2.3},
-        {firstName: 'Neil-deGrase', lastName: 'tyson', email: 'universe@nowhere.com', GPA: 3.4},
-        {firstName: 'Carl', lastName: 'Sagan', email: 'space@nowhere.com', GPA: 3.6}
-      ];
-      const schoolsSeed = [
-        {name:'Space Academy', image:'https://vignette.wikia.nocookie.net/memoryalpha/images/1/18/Starfleet_Academy_logo_2368.png/revision/latest?cb=20060912110311&path-prefix=en'},
-        {name:'Pratt Institure', image:'https://cdn-payscale.com/content/school_logos/Pratt%20Institute_200px.png'},
-        {name:'Le Cordon Bleu', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_pMw9Sru_aQUy2Rg8tdh_NjSaeW1aBVYxcU0earWX17MPuhNU'}
-      ]
-      //SANDBOX ABOVE
+// STORE BELOW
+      const SET_STUDENTS = 'SET_STUDENTS';
+      const ADD_STUDENT = 'ADD_STUDENT';
+      const DEL_STUDENT = 'DEL_STUDENT';
+      const SET_SCHOOLS = 'SET_SCHOOLS'
+      const ENROLL_STUDENT = 'ENROLL_STUDENT';
+      const WITHDRAW_STUDENT = 'WITHDRAW_STUDENT';
+
+      const setStudents = (_students) => (
+        {
+          type: SET_STUDENTS,
+          students: _students
+        }
+      )
+      const addStudent= (_student) => (
+        {
+          type: ADD_STUDENT,
+          student: _student
+        }
+      );
+      const delStudent = (_student) => (
+        {
+          type: DEL_STUDENT,
+          id: _student.id
+        }
+      );
+      const setSchools = (_schools) => (
+        {
+          type: SET_SCHOOLS,
+          schools: _schools
+        }
+      )
+      // v TO WORK ON -NOT SURE WHAT TO RETURNv
+      const enrollStudent = (_student, _school) => (
+        {
+          type: ENROLL_STUDENT,
+          student: _student,
+          school: _school
+        }
+      );
+      const withdrawStudent = (_student) => (
+        {
+          type: WITHDRAW_STUDENT,
+          student: _student
+        }
+      );
+
+      const store = Redux.createStore((state = {schools: [], students: []}, action ) => {
+        switch(action.type){
+          case 'SET_STUDENTS':
+            return {
+              ...state,
+              students: action.students
+            }
+          case 'ADD_STUDENT':
+            return {
+              ...state,
+              students: [...state.students, student]
+            }
+            break;
+          case 'DEL_STUDENT':
+            return {
+              ...state,
+              students: state.students.filter( (student) => student.id !== action.id)
+            }
+            break;
+          case 'SET_SCHOOLS':
+            return {
+              ...state,
+              schools: action.schools
+            }
+            break;
+          case 'ENROLL_STUDENT':
+            break;
+          case 'WITHDRAW_STUDENT':
+            break;
+          default:
+            return state
+        }
+      },applyMiddleware(ReduxThunk.default));
+
+      const getStudents = () => {
+        return async (dispatch) => {
+          const replyStudents = await axios.get('/api/students')
+          dispatch(setStudents(replyStudents.data))
+        }
+      };
+      const getSchools = () => {
+        return async (dispatch) => {
+          const replySchools = await axios.get('/api/schools')
+          dispatch(setSchools(replySchools.data))
+        }
+      };
+
+      // const start = async() => {
+      //   const replySchools = await axios.get('/api/schools')
+      //   store.dispatch({
+      //     type:'SET_SCHOOLS',
+      //     schools: replySchools.data
+      //   })
+      // };
+      // start()
+// STORE ABOVE
+
+//REACT BELOW
       class App extends React.Component {
         constructor(){
           super()
         };
         componentDidMount(){
-          //Get data from store
-        }
+          this.props.getStudents()
+          this.props.getSchools()
+        };
+        componentWillUnmount(){
+        };
         render() {
           return(
-            <HashRouter>
-              <h1>Acme Schools</h1>
-              <Nav/>
-              <br/>
-              <Route exact path='/' component={Home}/>
-              <Route path='/schools' component={Schools}/>
-              <Route path='/students' component={Students}/>
-            </HashRouter>
+
+              <HashRouter>
+                <h1>Acme Schools</h1>
+                <Nav/>
+                <br/>
+                <Route exact path='/' component={Home}/>
+                <Route path='/schools' component={Schools}/>
+                <Route path='/students' component={_Students} />
+              </HashRouter>
           )
         }
       };
+      const _App = connect(
+        null,
+        (dispatch)=> ({
+          getStudents: () => dispatch(getStudents()),
+          getSchools: () => dispatch(getSchools())
+        })
+      )(App)
+
       const Nav = () => {
         return(
           <div id='NavBar'>
@@ -103,6 +205,7 @@
           </div>
         )
       };
+
       const Schools = () => {
         return(
           <div>
@@ -115,8 +218,8 @@
         )
       }
       class Students extends React.Component{
-        constructor(){
-          super()
+        constructor(props){
+          super(props)
           const state = {
             firstName:'',
             lastName:'',
@@ -125,16 +228,9 @@
             schoolId:null
           }
         };
-        async componentDidMount(){
-          const reply = await axios.get('/api/students')
-          if (reply.data) {
-            this.props.dispatch(
-              {
-                type:"SET_STUDENTS",
-                payload: reply.data
-              }
-            )
-          }
+        componentDidMount() {
+          console.log(this.props)
+          console.log(store.getState().schools)
         };
         render(){
           return(
@@ -150,7 +246,7 @@
                 <label>Current GPA</label>
                   <input/>
                 <select>
-                  {schoolsSeed.map( (school) => {
+                  {store.getState().schools.map( (school) => {
                     return(
                       <option>{school.name} </option>
                     )
@@ -161,13 +257,17 @@
               <hr/>
               <div>
                 <h3>Enrolled Students</h3>
-                {studentsSeed.map( (student) => {
+                {store.getState().students.map( (student) => {
                   return(
                     <div key={student.id} className='SingleStudent'>
                       <h4>{student.firstName}</h4>
                       <div> GPA: {student.GPA} </div>
-                      <select>
-                        <option>SCHOOL OPTIONS</option>
+                      <select defaultOption='switch'>
+                        {store.getState().schools.map( (school) => {
+                          return(
+                            <option key={school.id}> {school.name} </option>
+                          )
+                        })}
                       </select>
                     </div>
                   )
@@ -177,9 +277,21 @@
           )
         }
       };
+      const _Students = connect(
+        null,
+        (dispatch)=> ({
+          getStudents: () => dispatch(getStudents()),
+          getSchools: () => dispatch(getSchools())
+        })
+      )(Students)
 
       const root = document.querySelector('#root');
-      ReactDOM.render(<App/>, root);
+      ReactDOM.render(
+        <Provider store={store}>
+          <_App/>
+        </Provider>
+        , root);
+
     </script>
   </body>
 </html>
