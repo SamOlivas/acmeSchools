@@ -17,7 +17,7 @@
     display:flex;
     justify-content: space-around
   }
-  .SingleStudent{
+  .studentTile{
     display: flex;
     align-content: space-around;
     flex-direction: column
@@ -94,8 +94,20 @@
           student: _student
         }
       );
-
-      const store = Redux.createStore((state = {schools: [], students: []}, action ) => {
+      const initialState = {
+        schools: [],
+        students: [],
+        singleStudent: {},
+        studentForm: {
+          firstName:'',
+          lastName:'',
+          email:'',
+          GPA:'',
+          desiredSchool:''
+        },
+        loading: true
+      }
+      const store = Redux.createStore((state = initialState, action ) => {
         switch(action.type){
           case 'SET_STUDENTS':
             return {
@@ -141,15 +153,6 @@
           dispatch(setSchools(replySchools.data))
         }
       };
-
-      // const start = async() => {
-      //   const replySchools = await axios.get('/api/schools')
-      //   store.dispatch({
-      //     type:'SET_SCHOOLS',
-      //     schools: replySchools.data
-      //   })
-      // };
-      // start()
 // STORE ABOVE
 
 //REACT BELOW
@@ -165,7 +168,6 @@
         };
         render() {
           return(
-
               <HashRouter>
                 <h1>Acme Schools</h1>
                 <Nav/>
@@ -220,31 +222,60 @@
       class Students extends React.Component{
         constructor(props){
           super(props)
-          const state = {
-            firstName:'',
-            lastName:'',
-            email:'',
-            GPA:null,
-            schoolId:null
+          this.state = {
+
           }
+          this.handleChange=this.handleChange.bind(this)
+          this.handleSubmit=this.handleSubmit.bind(this)
+          this.handleSelect=this.handleSelect.bind(this)
         };
+
+        handleChange(ev) {
+          this.state[ev.target.id] = ev.target.value
+        };
+        handleSubmit(ev) {
+          console.log(this.state)
+        };
+        handleSelect(ev) {
+          this.state.singleStudent = ev.target
+          console.log(ev.target)
+        };
+
+
         componentDidMount() {
-          console.log(this.props)
-          console.log(store.getState().schools)
-        };
+          this.state = store.getState()
+        }
         render(){
+          const { handleChange, handleSubmit } = this
+          // if (this.state.loading === true) {
+          //   return(
+          //     'Loading'
+          //   )
+          // }
           return(
             <div className='center'>
               <form id='EnrollStudent'>
                 <h3>Enroll New Student</h3>
                 <label>First Name</label>
-                  <input/>
+                  <input
+                    id='firstName'
+                    onChange={handleChange}
+                  />
                 <label>Last Name</label>
-                  <input/>
+                  <input
+                    id='lastName'
+                    onChange={handleChange}
+                  />
                 <label>Email</label>
-                  <input/>
+                  <input
+                    id='email'
+                    onChange={handleChange}
+                  />
                 <label>Current GPA</label>
-                  <input/>
+                  <input
+                    id='GPA'
+                    onChange={handleChange}
+                  />
                 <select>
                   {store.getState().schools.map( (school) => {
                     return(
@@ -252,14 +283,14 @@
                     )
                   })}
                 </select>
-                <button type='submit'>Enroll</button>
+                <button onClick={handleSubmit}>Enroll</button>
               </form>
               <hr/>
               <div>
                 <h3>Enrolled Students</h3>
                 {store.getState().students.map( (student) => {
                   return(
-                    <div key={student.id} className='SingleStudent'>
+                    <div key={student.id} className='studentTile'>
                       <h4>{student.firstName}</h4>
                       <div> GPA: {student.GPA} </div>
                       <select defaultOption='switch'>
