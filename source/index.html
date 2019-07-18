@@ -98,13 +98,6 @@
         schools: [],
         students: [],
         singleStudent: {},
-        studentForm: {
-          firstName:'',
-          lastName:'',
-          email:'',
-          GPA:'',
-          desiredSchool:''
-        },
         loading: true
       }
       const store = Redux.createStore((state = initialState, action ) => {
@@ -133,8 +126,14 @@
             }
             break;
           case 'ENROLL_STUDENT':
+            return {
+              ...state
+            }
             break;
           case 'WITHDRAW_STUDENT':
+          return {
+            ...state
+          }
             break;
           default:
             return state
@@ -223,35 +222,35 @@
         constructor(props){
           super(props)
           this.state = {
-
+            firstName:'',
+            lastName: '',
+            email:'',
+            GPA:'',
+            schoolId:''
           }
           this.handleChange=this.handleChange.bind(this)
           this.handleSubmit=this.handleSubmit.bind(this)
+          this.handleSelect=this.handleSelect.bind(this)
           this.handleSelect=this.handleSelect.bind(this)
         };
 
         handleChange(ev) {
           this.state[ev.target.id] = ev.target.value
         };
-        handleSubmit(ev) {
-          console.log(this.state)
+        async handleSubmit(ev) {
+          ev.preventDefault()
+          store.addStudent(this.state)
+          const res = await axios.post('/api/students/', this.state)
+
+          //console.log(this.props)
+          //console.log(this.state)
         };
         handleSelect(ev) {
-          this.state.singleStudent = ev.target
-          console.log(ev.target)
+          this.state.singleStudent = ev.target.key
+          console.log(ev.target.key)
         };
-
-
-        componentDidMount() {
-          this.state = store.getState()
-        }
         render(){
-          const { handleChange, handleSubmit } = this
-          // if (this.state.loading === true) {
-          //   return(
-          //     'Loading'
-          //   )
-          // }
+          const { handleChange, handleSubmit, handleSelect } = this
           return(
             <div className='center'>
               <form id='EnrollStudent'>
@@ -276,10 +275,10 @@
                     id='GPA'
                     onChange={handleChange}
                   />
-                <select>
-                  {store.getState().schools.map( (school) => {
+                <select onSelect={handleSelect} id='schoolId'>
+                  {this.props.schools.map( (school) => {
                     return(
-                      <option>{school.name} </option>
+                      <option key={school.id}>{school.name} </option>
                     )
                   })}
                 </select>
@@ -288,13 +287,13 @@
               <hr/>
               <div>
                 <h3>Enrolled Students</h3>
-                {store.getState().students.map( (student) => {
+                {this.props.students.map( (student) => {
                   return(
                     <div key={student.id} className='studentTile'>
                       <h4>{student.firstName}</h4>
                       <div> GPA: {student.GPA} </div>
                       <select defaultOption='switch'>
-                        {store.getState().schools.map( (school) => {
+                        {this.props.schools.map( (school) => {
                           return(
                             <option key={school.id}> {school.name} </option>
                           )
@@ -309,7 +308,9 @@
         }
       };
       const _Students = connect(
-        null,
+        (state) => ({
+          ...state
+        }),
         (dispatch)=> ({
           getStudents: () => dispatch(getStudents()),
           getSchools: () => dispatch(getSchools())

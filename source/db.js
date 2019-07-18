@@ -10,17 +10,17 @@ const Students = db.define('student', {
   },
   firstName: {
     type: Sequelize.STRING,
-    allowNull: false
+    //allowNull: false
   },
   lastName: {
     type: Sequelize.STRING,
-    allowNull: false
+    //allowNull: false
   },
   email: {
     type: Sequelize.STRING,
-    validate: {
-      isEmail: true
-    }
+    // validate: {
+    //   isEmail: true
+    // }
   },
   GPA: {
     type: Sequelize.FLOAT
@@ -68,8 +68,6 @@ const schoolsSeed = [
   {name:'Pratt Institure', image:'https://cdn-payscale.com/content/school_logos/Pratt%20Institute_200px.png'},
   {name:'Le Cordon Bleu', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_pMw9Sru_aQUy2Rg8tdh_NjSaeW1aBVYxcU0earWX17MPuhNU'}
 ]
-
-//syncAndSeed()
 
 module.exports = {
   models: {

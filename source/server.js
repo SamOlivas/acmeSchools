@@ -1,11 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-const {syncAndSeed, models} = require('./db')
+const {db, syncAndSeed, models} = require('./db')
 const path = require('path')
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-//syncAndSeed()
 
 app.use(cors());
 app.use(express.json());
@@ -40,7 +38,9 @@ app.get('/api/students/:id', async(req, res, next) => {
 })
 app.post('/api/students/', async(req,res,next) => {
   try {
+    console.log(req.body)
     const newStudent = await models.Students.create(req.body)
+    console.log(newStudent)
     res.send(newStudent)
   }
   catch(er) {
