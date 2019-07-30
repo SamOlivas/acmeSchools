@@ -140,6 +140,7 @@
         }
       },applyMiddleware(ReduxThunk.default));
 
+    //THINK THANK THUNK
       const getStudents = () => {
         return async (dispatch) => {
           const replyStudents = await axios.get('/api/students')
@@ -152,6 +153,15 @@
           dispatch(setSchools(replySchools.data))
         }
       };
+      const newStudent = (newStudent) => {
+        console.log('Adding Stuents')
+        return async (dispatch) => {
+          const replyStudent = await axios.post('/api/students')
+          console.log('wya?')
+          console.log(replyStudent)
+          dispatch(addStudent(replyStudent.data))
+        }
+      }
 // STORE ABOVE
 
 //REACT BELOW
@@ -181,6 +191,7 @@
       const _App = connect(
         null,
         (dispatch)=> ({
+          newStudent: () => dispatch(newStudent()),
           getStudents: () => dispatch(getStudents()),
           getSchools: () => dispatch(getSchools())
         })
@@ -239,8 +250,7 @@
         };
         async handleSubmit(ev) {
           ev.preventDefault()
-          store.addStudent(this.state)
-          const res = await axios.post('/api/students/', this.state)
+          newStudent(this.state)
 
           //console.log(this.props)
           //console.log(this.state)
@@ -312,10 +322,11 @@
           ...state
         }),
         (dispatch)=> ({
-          getStudents: () => dispatch(getStudents()),
-          getSchools: () => dispatch(getSchools())
+          newStudent: () => dispatch(newStudent())
+          //getStudents: () => dispatch(getStudents()),
+          //getSchools: () => dispatch(getSchools())
         })
-      )(Students)
+      )(Students);
 
       const root = document.querySelector('#root');
       ReactDOM.render(

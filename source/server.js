@@ -39,7 +39,7 @@ app.get('/api/students/:id', async(req, res, next) => {
 app.post('/api/students/', async(req,res,next) => {
   try {
     console.log(req.body)
-    const newStudent = await models.Students.create(req.body)
+    const newStudent = await models.Students.findOrCreate(req.body)
     console.log(newStudent)
     res.send(newStudent)
   }
